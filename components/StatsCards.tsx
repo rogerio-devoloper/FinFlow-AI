@@ -1,14 +1,13 @@
 import React from 'react';
-import { Transaction, TransactionType, TransactionStatus } from '../types';
+import { Transaction, TransactionType, TransactionStatus } from '../types.ts';
 import { TrendingUp, TrendingDown, Wallet, Clock, AlertTriangle } from 'lucide-react';
-import { formatCurrency } from '../utils/formatters';
+import { formatCurrency } from '../utils/formatters.ts';
 
 interface StatsCardsProps {
   transactions: Transaction[];
 }
 
 export const StatsCards: React.FC<StatsCardsProps> = ({ transactions }) => {
-  // Real Balance (Only Completed)
   const incomeReal = transactions
     .filter(t => t.type === TransactionType.INCOME && t.status === TransactionStatus.COMPLETED)
     .reduce((acc, curr) => acc + curr.amount, 0);
@@ -19,7 +18,6 @@ export const StatsCards: React.FC<StatsCardsProps> = ({ transactions }) => {
 
   const balanceReal = incomeReal - expenseReal;
 
-  // Pending (Future)
   const expensePending = transactions
     .filter(t => t.type === TransactionType.EXPENSE && t.status === TransactionStatus.PENDING)
     .reduce((acc, curr) => acc + curr.amount, 0);
@@ -30,7 +28,6 @@ export const StatsCards: React.FC<StatsCardsProps> = ({ transactions }) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-      {/* Balance Card - Keeps dark style for contrast */}
       <div className="bg-gradient-to-br from-brand-600 to-brand-900 p-6 rounded-2xl shadow-lg shadow-brand-900/50 text-white relative overflow-hidden transition-all duration-300">
         <div className="absolute top-0 right-0 p-4 opacity-10">
           <Wallet size={100} />
@@ -47,7 +44,6 @@ export const StatsCards: React.FC<StatsCardsProps> = ({ transactions }) => {
         </div>
       </div>
 
-      {/* Income Card */}
       <div className="bg-dark-card border border-dark-border p-6 rounded-2xl shadow-sm flex flex-col justify-between transition-colors duration-300">
         <div className="flex items-center justify-between mb-2">
             <p className="text-dark-muted text-sm font-medium">Receitas</p>
@@ -65,7 +61,6 @@ export const StatsCards: React.FC<StatsCardsProps> = ({ transactions }) => {
         </div>
       </div>
 
-      {/* Expense Card */}
       <div className="bg-dark-card border border-dark-border p-6 rounded-2xl shadow-sm flex flex-col justify-between transition-colors duration-300">
          <div className="flex items-center justify-between mb-2">
             <p className="text-dark-muted text-sm font-medium">Despesas</p>

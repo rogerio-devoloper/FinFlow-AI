@@ -1,7 +1,7 @@
 import React from 'react';
-import { Transaction, TransactionType, TransactionStatus } from '../types';
+import { Transaction, TransactionType, TransactionStatus } from '../types.ts';
 import { ArrowDownLeft, ArrowUpRight, Trash2, Calendar, CheckCircle2, Circle, AlertCircle, Clock, Pencil } from 'lucide-react';
-import { formatCurrency } from '../utils/formatters';
+import { formatCurrency } from '../utils/formatters.ts';
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -57,12 +57,9 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
             }`}
           >
             <div className="flex items-center gap-3 md:gap-4 overflow-hidden">
-              
-              {/* Status Toggle Button */}
               <button 
                 onClick={() => onToggleStatus(t.id)}
                 className={`transition-colors focus:outline-none flex-shrink-0 ${getStatusColor(t)}`}
-                title={t.status === TransactionStatus.COMPLETED ? "Marcar como pendente" : "Marcar como concluído"}
               >
                 {t.status === TransactionStatus.COMPLETED ? (
                     <CheckCircle2 size={22} className="fill-current bg-dark-card rounded-full" />
@@ -93,13 +90,6 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
                             {formatDate(t.date)}
                         </span>
                     </div>
-                    {t.dueDate && (
-                        <div className={`flex items-center gap-1 text-xs font-medium ${isOverdue(t) ? 'text-rose-500 dark:text-rose-400' : 'text-amber-500/80'}`}>
-                            <Clock size={10} />
-                            {t.type === TransactionType.INCOME ? 'Receb:' : 'Venc:'} {formatDate(t.dueDate)}
-                            {isOverdue(t) && ' (!)'}
-                        </div>
-                    )}
                 </div>
               </div>
             </div>
@@ -115,18 +105,10 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
               </span>
               
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button 
-                  onClick={() => onEdit(t)}
-                  className="p-1.5 text-dark-muted hover:text-brand-500 hover:bg-brand-500/10 rounded-lg transition-all"
-                  title="Editar"
-                >
+                <button onClick={() => onEdit(t)} className="p-1.5 text-dark-muted hover:text-brand-500 rounded-lg">
                   <Pencil size={14} />
                 </button>
-                <button 
-                  onClick={() => onDelete(t.id)}
-                  className="p-1.5 text-dark-muted hover:text-rose-500 hover:bg-rose-500/10 rounded-lg transition-all"
-                  title="Excluir"
-                >
+                <button onClick={() => onDelete(t.id)} className="p-1.5 text-dark-muted hover:text-rose-500 rounded-lg">
                   <Trash2 size={14} />
                 </button>
               </div>

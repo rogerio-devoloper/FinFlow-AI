@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CATEGORIES, Transaction, TransactionType, TransactionStatus } from '../types';
+import { CATEGORIES, Transaction, TransactionType, TransactionStatus } from '../types.ts';
 import { PlusCircle, X, CheckCircle2, Save } from 'lucide-react';
 
 interface TransactionFormProps {
@@ -15,8 +15,6 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onAdd, onClose
   const [category, setCategory] = useState(CATEGORIES[1]);
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [dueDate, setDueDate] = useState('');
-  
-  // Changed default to false (unchecked)
   const [isCompleted, setIsCompleted] = useState(false);
 
   useEffect(() => {
@@ -74,7 +72,6 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onAdd, onClose
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          
           <div className="flex bg-dark-input p-1 rounded-lg border border-dark-border">
             <button
               type="button"
@@ -171,11 +168,6 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onAdd, onClose
             <div className="flex flex-col">
                 <span className="text-sm font-medium text-dark-text">
                     {type === TransactionType.INCOME ? 'Recebido' : 'Pago'}
-                </span>
-                <span className="text-xs text-dark-muted">
-                    {isCompleted 
-                        ? 'O valor já foi contabilizado no saldo.' 
-                        : 'Será agendado como pendente.'}
                 </span>
             </div>
           </div>
