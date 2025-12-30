@@ -1,16 +1,20 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { Transaction, FinancialInsight, TransactionType } from "../types";
 
 export const generateFinancialAdvice = async (transactions: Transaction[]): Promise<FinancialInsight> => {
-  if (!process.env.API_KEY) {
-    throw new Error("API Key not found");
+  // Acesso seguro ao process.env
+  const apiKey = typeof process !== 'undefined' ? process.env.API_KEY : '';
+  
+  if (!apiKey) {
+    return {
+      healthScore: 0,
+      analysis: "Chave API não configurada no ambiente.",
+      tips: ["Configure a API_KEY para usar o Consultor IA."]
+    };
   }
 
-  // Always use {apiKey: process.env.API_KEY} for initialization
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey });
 
-  // Prepare data for the model
   const summary = transactions.map(t => 
     `${t.date} (${t.status}): ${t.type} de R$${t.amount} em ${t.category} - ${t.description}${t.dueDate ? ` [Vencimento: ${t.dueDate}]` : ''}`
   ).join('\n');
@@ -25,16 +29,15 @@ export const generateFinancialAdvice = async (transactions: Transaction[]): Prom
     Considere:
     1. Saldo real (apenas COMPLETED).
     2. Fluxo de caixa futuro (PENDING).
-    3. Contas em atraso (PENDING onde Data de Vencimento < Hoje). Se houver, alerte com urgência.
+    3. Contas em atraso (PENDING onde Data de Vencimento < Hoje).
 
     Retorne JSON com:
     - healthScore (0-100)
-    - analysis (resumo curto da situação e alertas de atraso se houver)
-    - tips (3 dicas práticas)
+    - analysis (resumo curto)
+    - tips (3 dicas)
   `;
 
   try {
-    // Updated to gemini-3-flash-preview for optimal text analysis
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: prompt,
@@ -43,37 +46,25 @@ export const generateFinancialAdvice = async (transactions: Transaction[]): Prom
         responseSchema: {
           type: Type.OBJECT,
           properties: {
-            healthScore: {
-              type: Type.NUMBER,
-              description: "Pontuação de saúde financeira."
-            },
-            analysis: {
-              type: Type.STRING,
-              description: "Análise concisa."
-            },
-            tips: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
-              description: "Lista de 3 dicas."
-            }
+            healthScore: { type: Type.NUMBER },
+            analysis: { type: Type.STRING },
+            tips: { type: Type.ARRAY, items: { type: Type.STRING } }
           },
           required: ["healthScore", "analysis", "tips"]
         }
       }
     });
 
-    // response.text is a property, not a method
     const text = response.text;
-    if (!text) throw new Error("No response from AI");
-    
+    if (!text) throw new Error("No response");
     return JSON.parse(text) as FinancialInsight;
 
   } catch (error) {
-    console.error("Error calling Gemini:", error);
+    console.error("Error Gemini:", error);
     return {
       healthScore: 0,
-      analysis: "Erro ao analisar. Verifique sua chave API.",
-      tips: ["Tente novamente."]
+      analysis: "Erro ao analisar dados com a IA.",
+      tips: ["Verifique sua conexão."]
     };
   }
 };

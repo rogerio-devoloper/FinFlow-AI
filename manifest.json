@@ -1,9 +1,10 @@
 {
-  "id": "finflow-ai-production",
-  "name": "FinFlow AI",
+  "id": "finflow-ai-v1",
+  "name": "FinFlow AI - Gestão Financeira",
   "short_name": "FinFlow",
   "description": "Gestão financeira moderna com IA",
-  "start_url": ".",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0ea5e9",

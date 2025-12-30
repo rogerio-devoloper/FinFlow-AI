@@ -8,7 +8,7 @@ import { AIAdvisor } from './components/AIAdvisor';
 import { SettingsModal } from './components/SettingsModal';
 import { FilterBar, FilterState } from './components/FilterBar';
 import { SCurveChart } from './components/SCurveChart';
-import { LayoutDashboard, Plus, Settings, Sun, Moon, CloudCheck, Loader2, MonitorDown, X, Download, Share, PlusSquare } from 'lucide-react';
+import { LayoutDashboard, Plus, Settings, Sun, Moon, CloudCheck, Loader2, Download, Share, PlusSquare } from 'lucide-react';
 import { syncToSheet } from './services/sheetsService';
 
 const App: React.FC = () => {
@@ -19,7 +19,6 @@ const App: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   
-  // PWA Installation State
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [canInstall, setCanInstall] = useState(false);
   const [showIosGuide, setShowIosGuide] = useState(false);
@@ -36,7 +35,6 @@ const App: React.FC = () => {
   const syncTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    // Detect if it's iOS
     const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
     if (isIos && !isStandalone) {
@@ -47,7 +45,6 @@ const App: React.FC = () => {
       e.preventDefault();
       setDeferredPrompt(e);
       setCanInstall(true);
-      console.log('PWA: Pronto para instalar!');
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -83,9 +80,7 @@ const App: React.FC = () => {
     if (saved) {
       try {
         setTransactions(JSON.parse(saved));
-      } catch (e) {
-        console.error("Failed to parse transactions", e);
-      }
+      } catch (e) {}
     }
     
     const savedConfig = localStorage.getItem('finflow_sheet_config');
@@ -173,7 +168,6 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-dark-bg pb-20 transition-colors duration-300">
       
-      {/* Botão Flutuante de Instalação (Android/Windows) */}
       {canInstall && (
         <div className="fixed bottom-24 right-6 z-50 animate-bounce">
           <button 
@@ -186,12 +180,11 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* Guia de Instalação iOS (iPhone) */}
       {showIosGuide && (
         <div className="fixed bottom-6 left-6 right-6 z-50 bg-brand-600 text-white p-4 rounded-2xl shadow-2xl animate-fade-in flex flex-col gap-3">
           <div className="flex justify-between items-start">
             <p className="text-sm font-medium">Instale este App no seu iPhone:</p>
-            <button onClick={() => setShowIosGuide(false)}><X size={18} /></button>
+            <button onClick={() => setShowIosGuide(false)} className="p-1">✕</button>
           </div>
           <div className="flex items-center gap-4 text-xs">
             <div className="flex flex-col items-center gap-1">

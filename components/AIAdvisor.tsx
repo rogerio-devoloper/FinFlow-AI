@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Transaction, FinancialInsight } from '../types';
 import { generateFinancialAdvice } from '../services/geminiService';
@@ -26,13 +25,8 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({ transactions }) => {
     }
   };
 
-  if (!process.env.API_KEY) {
-    return null;
-  }
-
   return (
     <div className="bg-gradient-to-r from-indigo-100/80 to-purple-100/80 dark:from-indigo-900/40 dark:to-purple-900/40 border border-indigo-200 dark:border-indigo-500/30 rounded-2xl p-6 mb-8 relative overflow-hidden transition-colors duration-300">
-        {/* Background glow effects */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
 
         <div className="relative z-10">
