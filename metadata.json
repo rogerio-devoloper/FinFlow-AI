@@ -1,0 +1,7 @@
+{
+  "name": "FinFlow AI",
+  "description": "Um gerenciador financeiro moderno com insights baseados em IA para otimizar seu salário.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
