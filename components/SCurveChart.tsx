@@ -1,7 +1,7 @@
 import React from 'react';
-import { Transaction, TransactionType } from '../types.ts';
+import { Transaction, TransactionType } from '../types';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import { formatCurrency } from '../utils/formatters.ts';
+import { formatCurrency } from '../utils/formatters';
 
 interface SCurveChartProps {
   transactions: Transaction[];
@@ -9,6 +9,7 @@ interface SCurveChartProps {
 }
 
 export const SCurveChart: React.FC<SCurveChartProps> = ({ transactions, isDarkMode }) => {
+  // Chart Colors based on theme
   const textColor = isDarkMode ? '#f8fafc' : '#0f172a';
   const gridColor = isDarkMode ? '#334155' : '#e2e8f0';
   const tooltipBg = isDarkMode ? '#1e293b' : '#ffffff';
@@ -16,6 +17,7 @@ export const SCurveChart: React.FC<SCurveChartProps> = ({ transactions, isDarkMo
 
   const sortedTransactions = [...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
+  // Generate cumulative data
   let cumulativeIncome = 0;
   let cumulativeExpense = 0;
 
@@ -30,12 +32,14 @@ export const SCurveChart: React.FC<SCurveChartProps> = ({ transactions, isDarkMo
     };
   });
 
+  // Reduce data points if too many to prevent clutter, but keep start and end
   const chartData = data.length > 30 ? data.filter((_, i) => i === 0 || i === data.length - 1 || i % Math.ceil(data.length / 20) === 0) : data;
 
   return (
     <div className="bg-dark-card border border-dark-border rounded-2xl shadow-sm overflow-hidden h-full flex flex-col transition-colors duration-300">
       <div className="p-6 border-b border-dark-border">
         <h3 className="text-lg font-semibold text-dark-text">Evolução Financeira</h3>
+        <p className="text-xs text-dark-muted mt-1">Acumulado de Receitas vs Despesas no período</p>
       </div>
       <div className="flex-1 min-h-[300px] p-4">
         {transactions.length === 0 ? (
@@ -63,8 +67,24 @@ export const SCurveChart: React.FC<SCurveChartProps> = ({ transactions, isDarkMo
                     itemStyle={{ color: textColor }}
                     formatter={(value: number) => formatCurrency(value)}
                 />
-                <Area type="monotone" dataKey="receitaAcumulada" name="Receita Acum." stroke="#10b981" fillOpacity={1} fill="url(#colorIncome)" strokeWidth={2} />
-                <Area type="monotone" dataKey="despesaAcumulada" name="Despesa Acum." stroke="#f43f5e" fillOpacity={1} fill="url(#colorExpense)" strokeWidth={2} />
+                <Area 
+                    type="monotone" 
+                    dataKey="receitaAcumulada" 
+                    name="Receita Acum."
+                    stroke="#10b981" 
+                    fillOpacity={1} 
+                    fill="url(#colorIncome)" 
+                    strokeWidth={2}
+                />
+                <Area 
+                    type="monotone" 
+                    dataKey="despesaAcumulada" 
+                    name="Despesa Acum."
+                    stroke="#f43f5e" 
+                    fillOpacity={1} 
+                    fill="url(#colorExpense)" 
+                    strokeWidth={2}
+                />
             </AreaChart>
             </ResponsiveContainer>
         )}

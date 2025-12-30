@@ -1,7 +1,7 @@
 import React from 'react';
-import { Transaction, TransactionType } from '../types.ts';
+import { Transaction, TransactionType } from '../types';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { formatCurrency } from '../utils/formatters.ts';
+import { formatCurrency } from '../utils/formatters';
 
 interface ChartsProps {
   transactions: Transaction[];
@@ -11,11 +11,13 @@ interface ChartsProps {
 const COLORS = ['#0ea5e9', '#22c55e', '#eab308', '#f97316', '#ef4444', '#a855f7', '#ec4899', '#6366f1'];
 
 export const Charts: React.FC<ChartsProps> = ({ transactions, isDarkMode }) => {
+  // Chart Colors based on theme
   const textColor = isDarkMode ? '#f8fafc' : '#0f172a';
   const gridColor = isDarkMode ? '#334155' : '#e2e8f0';
   const tooltipBg = isDarkMode ? '#1e293b' : '#ffffff';
   const tooltipBorder = isDarkMode ? '#334155' : '#e2e8f0';
 
+  // Prepare data for Pie Chart (Expenses by Category)
   const expensesByCategory = transactions
     .filter(t => t.type === TransactionType.EXPENSE)
     .reduce((acc, curr) => {
@@ -28,6 +30,7 @@ export const Charts: React.FC<ChartsProps> = ({ transactions, isDarkMode }) => {
     value: expensesByCategory[key]
   }));
 
+  // Prepare data for Bar Chart
   const barData = [
     {
       name: 'Entradas',
@@ -49,6 +52,7 @@ export const Charts: React.FC<ChartsProps> = ({ transactions, isDarkMode }) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      {/* Category Distribution */}
       <div className="bg-dark-card border border-dark-border p-6 rounded-2xl shadow-sm transition-colors duration-300">
         <h3 className="text-lg font-semibold text-dark-text mb-4">Gastos por Categoria</h3>
         <div className="h-64">
@@ -83,6 +87,7 @@ export const Charts: React.FC<ChartsProps> = ({ transactions, isDarkMode }) => {
         </div>
       </div>
 
+      {/* Income vs Expense */}
       <div className="bg-dark-card border border-dark-border p-6 rounded-2xl shadow-sm transition-colors duration-300">
         <h3 className="text-lg font-semibold text-dark-text mb-4">Resumo Financeiro</h3>
         <div className="h-64">

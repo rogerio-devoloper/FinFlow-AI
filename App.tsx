@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Transaction, TransactionStatus } from './types.ts';
-import { StatsCards } from './components/StatsCards.tsx';
-import { TransactionForm } from './components/TransactionForm.tsx';
-import { TransactionList } from './components/TransactionList.tsx';
-import { Charts } from './components/Charts.tsx';
-import { AIAdvisor } from './components/AIAdvisor.tsx';
-import { SettingsModal } from './components/SettingsModal.tsx';
-import { FilterBar, FilterState } from './components/FilterBar.tsx';
-import { SCurveChart } from './components/SCurveChart.tsx';
+import { Transaction, TransactionStatus } from './types';
+import { StatsCards } from './components/StatsCards';
+import { TransactionForm } from './components/TransactionForm';
+import { TransactionList } from './components/TransactionList';
+import { Charts } from './components/Charts';
+import { AIAdvisor } from './components/AIAdvisor';
+import { SettingsModal } from './components/SettingsModal';
+import { FilterBar, FilterState } from './components/FilterBar';
+import { SCurveChart } from './components/SCurveChart';
 import { LayoutDashboard, Plus, Settings, Sun, Moon, CloudCheck, Loader2, Download, Share, PlusSquare } from 'lucide-react';
-import { syncToSheet } from './services/sheetsService.ts';
+import { syncToSheet } from './services/sheetsService';
 
 const App: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
