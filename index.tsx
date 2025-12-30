@@ -1,29 +1,25 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
+import App from './App.tsx';
 
 const rootElement = document.getElementById('root');
-if (!rootElement) {
-  throw new Error("Could not find root element to mount to");
+
+if (rootElement) {
+  try {
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+  } catch (err) {
+    console.error("Erro na renderização:", err);
+    rootElement.innerHTML = `<div style="color:red;padding:20px">Erro ao iniciar: ${err.message}</div>`;
+  }
 }
 
-// Registro robusto do Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    // Usando ./sw.js para garantir que ele procure na mesma pasta do index
-    navigator.serviceWorker.register('./sw.js', { scope: './' })
-      .then(registration => {
-        console.log('FinFlow PWA: Ativo no escopo:', registration.scope);
-      })
-      .catch(err => {
-        console.error('FinFlow PWA: Erro no registro:', err);
-      });
+    navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW fail', err));
   });
 }
-
-const root = ReactDOM.createRoot(rootElement);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
