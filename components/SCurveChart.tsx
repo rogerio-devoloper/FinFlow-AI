@@ -1,7 +1,6 @@
 import React from 'react';
 import { Transaction, TransactionType } from '../types';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import { formatCurrency } from '../utils/formatters';
 
 interface SCurveChartProps {
   transactions: Transaction[];
@@ -65,7 +64,7 @@ export const SCurveChart: React.FC<SCurveChartProps> = ({ transactions, isDarkMo
                 <Tooltip 
                     contentStyle={{ backgroundColor: tooltipBg, borderColor: tooltipBorder, color: textColor, borderRadius: '8px', fontSize: '12px' }}
                     itemStyle={{ color: textColor }}
-                    formatter={(value: number) => formatCurrency(value)}
+                    formatter={(value: number) => `R$ ${value.toFixed(2)}`}
                 />
                 <Area 
                     type="monotone" 

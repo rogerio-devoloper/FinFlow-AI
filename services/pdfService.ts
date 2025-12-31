@@ -1,7 +1,10 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Transaction, TransactionType, TransactionStatus } from '../types';
-import { formatCurrency } from '../utils/formatters';
+
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+};
 
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('pt-BR', {timeZone: 'UTC'});

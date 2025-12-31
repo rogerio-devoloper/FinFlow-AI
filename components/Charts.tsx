@@ -1,7 +1,6 @@
 import React from 'react';
 import { Transaction, TransactionType } from '../types';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { formatCurrency } from '../utils/formatters';
 
 interface ChartsProps {
   transactions: Transaction[];
@@ -76,7 +75,7 @@ export const Charts: React.FC<ChartsProps> = ({ transactions, isDarkMode }) => {
               <Tooltip 
                 contentStyle={{ backgroundColor: tooltipBg, borderColor: tooltipBorder, color: textColor, borderRadius: '8px' }}
                 itemStyle={{ color: textColor }}
-                formatter={(value: number) => formatCurrency(value)}
+                formatter={(value: number) => `R$ ${value.toFixed(2)}`}
               />
               <Legend 
                 wrapperStyle={{ color: textColor }} 
@@ -99,7 +98,7 @@ export const Charts: React.FC<ChartsProps> = ({ transactions, isDarkMode }) => {
               <Tooltip 
                 cursor={{fill: gridColor, opacity: 0.4}}
                 contentStyle={{ backgroundColor: tooltipBg, borderColor: tooltipBorder, color: textColor, borderRadius: '8px' }}
-                formatter={(value: number) => formatCurrency(value)}
+                formatter={(value: number) => `R$ ${value.toFixed(2)}`}
                 itemStyle={{ color: textColor }}
               />
               <Bar dataKey="amount" fill="#0ea5e9" radius={[4, 4, 0, 0]}>

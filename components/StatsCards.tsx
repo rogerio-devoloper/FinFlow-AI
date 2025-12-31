@@ -1,7 +1,6 @@
 import React from 'react';
 import { Transaction, TransactionType, TransactionStatus } from '../types';
 import { TrendingUp, TrendingDown, Wallet, Clock, AlertTriangle } from 'lucide-react';
-import { formatCurrency } from '../utils/formatters';
 
 interface StatsCardsProps {
   transactions: Transaction[];
@@ -28,6 +27,9 @@ export const StatsCards: React.FC<StatsCardsProps> = ({ transactions }) => {
     .filter(t => t.type === TransactionType.INCOME && t.status === TransactionStatus.PENDING)
     .reduce((acc, curr) => acc + curr.amount, 0);
 
+  const formatMoney = (val: number) => 
+    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
       {/* Balance Card - Keeps dark style for contrast */}
@@ -37,10 +39,10 @@ export const StatsCards: React.FC<StatsCardsProps> = ({ transactions }) => {
         </div>
         <div className="relative z-10">
           <p className="text-brand-100 text-sm font-medium mb-1">Saldo em Conta</p>
-          <h2 className="text-3xl font-bold">{formatCurrency(balanceReal)}</h2>
+          <h2 className="text-3xl font-bold">{formatMoney(balanceReal)}</h2>
           <div className="mt-2 text-xs bg-black/20 inline-flex items-center gap-1.5 px-2 py-1 rounded-full">
             <span className={balanceReal + incomePending - expensePending >= 0 ? 'text-emerald-300' : 'text-rose-300'}>
-              {formatCurrency(balanceReal + incomePending - expensePending)}
+              {formatMoney(balanceReal + incomePending - expensePending)}
             </span>
             <span className="opacity-70">previsto</span>
           </div>
@@ -56,10 +58,10 @@ export const StatsCards: React.FC<StatsCardsProps> = ({ transactions }) => {
             </div>
         </div>
         <div>
-            <h2 className="text-2xl font-bold text-emerald-500 dark:text-emerald-400">{formatCurrency(incomeReal)}</h2>
+            <h2 className="text-2xl font-bold text-emerald-500 dark:text-emerald-400">{formatMoney(incomeReal)}</h2>
             {incomePending > 0 && (
                 <p className="text-xs text-emerald-600/70 dark:text-emerald-500/70 mt-1 flex items-center gap-1">
-                    <Clock size={12} /> +{formatCurrency(incomePending)} a receber
+                    <Clock size={12} /> +{formatMoney(incomePending)} a receber
                 </p>
             )}
         </div>
@@ -74,10 +76,10 @@ export const StatsCards: React.FC<StatsCardsProps> = ({ transactions }) => {
             </div>
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-rose-500 dark:text-rose-400">{formatCurrency(expenseReal)}</h2>
+          <h2 className="text-2xl font-bold text-rose-500 dark:text-rose-400">{formatMoney(expenseReal)}</h2>
           {expensePending > 0 && (
              <p className="text-xs text-rose-600/70 dark:text-rose-500/70 mt-1 flex items-center gap-1">
-                <AlertTriangle size={12} /> +{formatCurrency(expensePending)} a pagar
+                <AlertTriangle size={12} /> +{formatMoney(expensePending)} a pagar
              </p>
           )}
         </div>

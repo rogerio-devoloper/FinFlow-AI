@@ -25,8 +25,13 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({ transactions }) => {
     }
   };
 
+  if (!process.env.API_KEY) {
+    return null;
+  }
+
   return (
     <div className="bg-gradient-to-r from-indigo-100/80 to-purple-100/80 dark:from-indigo-900/40 dark:to-purple-900/40 border border-indigo-200 dark:border-indigo-500/30 rounded-2xl p-6 mb-8 relative overflow-hidden transition-colors duration-300">
+        {/* Background glow effects */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
 
         <div className="relative z-10">
@@ -37,7 +42,7 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({ transactions }) => {
                     </div>
                     <div>
                         <h3 className="text-xl font-bold text-indigo-950 dark:text-white whitespace-nowrap">Consultor IA</h3>
-                        <p className="text-indigo-600/70 dark:text-indigo-200/70 text-sm whitespace-nowrap">Powered by Gemini 3</p>
+                        <p className="text-indigo-600/70 dark:text-indigo-200/70 text-sm whitespace-nowrap">Powered by Gemini 2.5</p>
                     </div>
                 </div>
                 {!insight && (

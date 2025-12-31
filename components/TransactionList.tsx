@@ -1,7 +1,6 @@
 import React from 'react';
 import { Transaction, TransactionType, TransactionStatus } from '../types';
 import { ArrowDownLeft, ArrowUpRight, Trash2, Calendar, CheckCircle2, Circle, AlertCircle, Clock, Pencil } from 'lucide-react';
-import { formatCurrency } from '../utils/formatters';
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -111,7 +110,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
                 t.type === TransactionType.INCOME ? 'text-emerald-500 dark:text-emerald-400' : 'text-dark-text'
               }`}>
                 {t.type === TransactionType.EXPENSE ? '-' : '+'} 
-                {formatCurrency(t.amount)}
+                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount)}
               </span>
               
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
