@@ -15,14 +15,36 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onAdd, onClose
   const [category, setCategory] = useState(CATEGORIES[1]);
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [dueDate, setDueDate] = useState('');
-  
-  // Changed default to false (unchecked)
   const [isCompleted, setIsCompleted] = useState(false);
+
+  // Helper to format numeric value to BRL currency string
+  const formatCurrency = (value: string) => {
+    // Remove non-numeric characters
+    const cleanValue = value.replace(/\D/g, "");
+    if (!cleanValue) return "";
+    
+    // Convert to number and treat as cents
+    const numericValue = Number(cleanValue) / 100;
+    
+    // Format to BRL locale
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(numericValue);
+  };
+
+  // Helper to parse currency string back to number
+  const parseCurrencyToNumber = (value: string) => {
+    const cleanValue = value.replace(/\D/g, "");
+    return Number(cleanValue) / 100;
+  };
 
   useEffect(() => {
     if (initialData) {
       setDescription(initialData.description);
-      setAmount(initialData.amount.toString());
+      // Convert number to string cents and format
+      const centsString = Math.round(initialData.amount * 100).toString();
+      setAmount(formatCurrency(centsString));
       setType(initialData.type);
       setCategory(initialData.category);
       setDate(initialData.date);
@@ -31,14 +53,21 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onAdd, onClose
     }
   }, [initialData]);
 
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCurrency(e.target.value);
+    setAmount(formatted);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!description || !amount || !date) return;
+    const numericAmount = parseCurrencyToNumber(amount);
+    
+    if (!description || isNaN(numericAmount) || numericAmount <= 0 || !date) return;
 
     const newTransaction: Transaction = {
       id: initialData ? initialData.id : crypto.randomUUID(),
       description,
-      amount: parseFloat(amount),
+      amount: numericAmount,
       type,
       category,
       date,
@@ -114,14 +143,14 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({ onAdd, onClose
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-dark-muted mb-1">Valor (R$)</label>
+              <label className="block text-sm font-medium text-dark-muted mb-1">Valor</label>
               <input
-                type="number"
-                step="0.01"
+                type="text"
+                inputMode="numeric"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="w-full bg-dark-input border border-dark-border rounded-lg px-4 py-3 text-dark-text focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
-                placeholder="0,00"
+                onChange={handleAmountChange}
+                className="w-full bg-dark-input border border-dark-border rounded-lg px-4 py-3 text-dark-text font-medium focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
+                placeholder="R$ 0,00"
                 required
               />
             </div>

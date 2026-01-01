@@ -1,6 +1,6 @@
 import React from 'react';
 import { Transaction, TransactionType, TransactionStatus } from '../types';
-import { ArrowDownLeft, ArrowUpRight, Trash2, Calendar, CheckCircle2, Circle, AlertCircle, Clock, Pencil } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, Trash2, Calendar, CheckCircle2, Circle, AlertCircle, Clock, Pencil, AlertTriangle } from 'lucide-react';
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -10,7 +10,8 @@ interface TransactionListProps {
 }
 
 export const TransactionList: React.FC<TransactionListProps> = ({ transactions, onDelete, onToggleStatus, onEdit }) => {
-  const sorted = [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const incomes = transactions.filter(t => t.type === TransactionType.INCOME).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const expenses = transactions.filter(t => t.type === TransactionType.EXPENSE).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   const isOverdue = (t: Transaction) => {
     if (t.status === TransactionStatus.COMPLETED) return false;
@@ -19,9 +20,23 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
     return relevantDate < today;
   };
 
+  const isNearDate = (t: Transaction) => {
+    if (t.status === TransactionStatus.COMPLETED) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const targetDate = new Date(t.dueDate || t.date);
+    targetDate.setHours(0, 0, 0, 0);
+    
+    const diffTime = targetDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays >= 0 && diffDays <= 2;
+  };
+
   const getStatusColor = (t: Transaction) => {
       if (t.status === TransactionStatus.COMPLETED) return 'text-emerald-500';
       if (isOverdue(t)) return 'text-rose-500';
+      if (isNearDate(t)) return 'text-amber-500';
       return 'text-amber-500';
   };
 
@@ -29,109 +44,114 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
       return new Date(dateStr).toLocaleDateString('pt-BR', {timeZone: 'UTC'});
   };
 
-  if (sorted.length === 0) {
-    return (
-        <div className="bg-dark-card border border-dark-border rounded-2xl p-8 text-center text-dark-muted shadow-sm h-full flex flex-col justify-center">
-            <p>Nenhuma transação neste período.</p>
-        </div>
-    );
-  }
-
-  return (
-    <div className="bg-dark-card border border-dark-border rounded-2xl shadow-sm overflow-hidden transition-colors duration-300 h-full flex flex-col">
-      <div className="p-6 border-b border-dark-border flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-dark-text">Extrato</h3>
-        <span className="text-xs text-dark-muted bg-dark-hover px-2 py-1 rounded">
-            {transactions.filter(t => t.status === TransactionStatus.PENDING).length} pendências
-        </span>
-      </div>
-      <div className="divide-y divide-dark-border overflow-y-auto flex-1 max-h-[500px]">
-        {sorted.map((t) => (
-          <div 
-            key={t.id} 
-            className={`p-4 flex items-center justify-between transition-colors group ${
-                isOverdue(t) 
-                ? 'animate-overdue' 
-                : 'hover:bg-dark-hover'
-            }`}
+  // Fixed: Added key to props type to satisfy TypeScript error during mapping.
+  // Note: key is not passed down by React to the component, but it's required in the JSX element type for lists.
+  const TransactionItem = ({ t }: { t: Transaction; key?: string }) => (
+    <div 
+      className={`p-3 rounded-xl border border-transparent transition-all group relative overflow-hidden ${
+          isOverdue(t) 
+          ? 'animate-overdue' 
+          : isNearDate(t)
+          ? 'animate-glow-warning bg-amber-500/5'
+          : 'hover:bg-dark-hover'
+      }`}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 overflow-hidden">
+          <button 
+            onClick={() => onToggleStatus(t.id)}
+            className={`transition-colors focus:outline-none flex-shrink-0 ${getStatusColor(t)}`}
           >
-            <div className="flex items-center gap-3 md:gap-4 overflow-hidden">
-              
-              {/* Status Toggle Button */}
-              <button 
-                onClick={() => onToggleStatus(t.id)}
-                className={`transition-colors focus:outline-none flex-shrink-0 ${getStatusColor(t)}`}
-                title={t.status === TransactionStatus.COMPLETED ? "Marcar como pendente" : "Marcar como concluído"}
-              >
-                {t.status === TransactionStatus.COMPLETED ? (
-                    <CheckCircle2 size={22} className="fill-current bg-dark-card rounded-full" />
-                ) : isOverdue(t) ? (
-                    <AlertCircle size={22} className="fill-current bg-dark-card rounded-full" />
-                ) : (
-                    <Circle size={22} />
+            {t.status === TransactionStatus.COMPLETED ? (
+                <CheckCircle2 size={20} className="fill-current bg-dark-card rounded-full" />
+            ) : isOverdue(t) ? (
+                <AlertCircle size={20} className="fill-current bg-dark-card rounded-full" />
+            ) : isNearDate(t) ? (
+                <AlertTriangle size={20} className="fill-current animate-pulse" />
+            ) : (
+                <Circle size={20} />
+            )}
+          </button>
+
+          <div className="min-w-0">
+            <p className={`text-sm font-medium truncate ${t.status === TransactionStatus.COMPLETED ? 'text-dark-text' : 'text-dark-muted'}`}>
+                {t.description}
+            </p>
+            <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-[10px] text-dark-muted flex items-center gap-1">
+                    <Calendar size={10} /> 
+                    {formatDate(t.date)}
+                </span>
+                {t.dueDate && (
+                    <span className={`text-[10px] font-medium flex items-center gap-1 ${isOverdue(t) ? 'text-rose-500' : isNearDate(t) ? 'text-amber-500' : 'text-dark-muted'}`}>
+                        <Clock size={10} />
+                        {formatDate(t.dueDate)}
+                    </span>
                 )}
-              </button>
-
-              <div className={`p-2 rounded-lg flex-shrink-0 ${
-                t.type === TransactionType.INCOME 
-                  ? 'bg-emerald-500/10 text-emerald-500' 
-                  : 'bg-rose-500/10 text-rose-500'
-              }`}>
-                {t.type === TransactionType.INCOME ? <ArrowUpRight size={16} /> : <ArrowDownLeft size={16} />}
-              </div>
-
-              <div className="min-w-0">
-                <p className={`font-medium truncate ${t.status === TransactionStatus.COMPLETED ? 'text-dark-text' : 'text-dark-muted'}`}>
-                    {t.description}
-                </p>
-                <div className="flex flex-col gap-0.5 mt-1">
-                    <div className="flex items-center gap-2 text-xs text-dark-muted">
-                        <span className="bg-dark-hover px-2 py-0.5 rounded text-dark-text/80 whitespace-nowrap">{t.category}</span>
-                        <span className="flex items-center gap-1 whitespace-nowrap">
-                            <Calendar size={10} /> 
-                            {formatDate(t.date)}
-                        </span>
-                    </div>
-                    {t.dueDate && (
-                        <div className={`flex items-center gap-1 text-xs font-medium ${isOverdue(t) ? 'text-rose-500 dark:text-rose-400' : 'text-amber-500/80'}`}>
-                            <Clock size={10} />
-                            {t.type === TransactionType.INCOME ? 'Receb:' : 'Venc:'} {formatDate(t.dueDate)}
-                            {isOverdue(t) && ' (!)'}
-                        </div>
-                    )}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col items-end gap-1 pl-2">
-              <span className={`font-semibold whitespace-nowrap ${
-                t.status === TransactionStatus.PENDING ? 'opacity-60' : ''
-              } ${
-                t.type === TransactionType.INCOME ? 'text-emerald-500 dark:text-emerald-400' : 'text-dark-text'
-              }`}>
-                {t.type === TransactionType.EXPENSE ? '-' : '+'} 
-                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount)}
-              </span>
-              
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button 
-                  onClick={() => onEdit(t)}
-                  className="p-1.5 text-dark-muted hover:text-brand-500 hover:bg-brand-500/10 rounded-lg transition-all"
-                  title="Editar"
-                >
-                  <Pencil size={14} />
-                </button>
-                <button 
-                  onClick={() => onDelete(t.id)}
-                  className="p-1.5 text-dark-muted hover:text-rose-500 hover:bg-rose-500/10 rounded-lg transition-all"
-                  title="Excluir"
-                >
-                  <Trash2 size={14} />
-                </button>
-              </div>
             </div>
           </div>
-        ))}
+        </div>
+
+        <div className="flex flex-col items-end flex-shrink-0">
+          <span className={`text-sm font-bold ${
+            t.status === TransactionStatus.PENDING ? 'opacity-60' : ''
+          } ${
+            t.type === TransactionType.INCOME ? 'text-emerald-500 dark:text-emerald-400' : 'text-dark-text'
+          }`}>
+            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount)}
+          </span>
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
+            <button onClick={() => onEdit(t)} className="p-1 text-dark-muted hover:text-brand-500"><Pencil size={12}/></button>
+            <button onClick={() => onDelete(t.id)} className="p-1 text-dark-muted hover:text-rose-500"><Trash2 size={12}/></button>
+          </div>
+        </div>
+      </div>
+      {isNearDate(t) && (
+        <div className="absolute top-0 right-0 p-1">
+            <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></div>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+      {/* Receitas Column */}
+      <div className="bg-dark-card border border-dark-border rounded-2xl shadow-sm flex flex-col overflow-hidden transition-colors duration-300">
+        <div className="p-4 border-b border-dark-border flex justify-between items-center bg-emerald-500/5">
+          <h3 className="text-sm font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-2 uppercase tracking-wider">
+            <ArrowUpRight size={16} /> Receitas
+          </h3>
+          <span className="text-[10px] bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded-full font-bold">
+            {incomes.length} itens
+          </span>
+        </div>
+        <div className="p-2 space-y-1 overflow-y-auto flex-1 max-h-[400px]">
+          {incomes.length === 0 ? (
+            <p className="text-center py-8 text-xs text-dark-muted italic">Nenhuma receita.</p>
+          ) : (
+            incomes.map(t => <TransactionItem key={t.id} t={t} />)
+          )}
+        </div>
+      </div>
+
+      {/* Despesas Column */}
+      <div className="bg-dark-card border border-dark-border rounded-2xl shadow-sm flex flex-col overflow-hidden transition-colors duration-300">
+        <div className="p-4 border-b border-dark-border flex justify-between items-center bg-rose-500/5">
+          <h3 className="text-sm font-bold text-rose-600 dark:text-rose-400 flex items-center gap-2 uppercase tracking-wider">
+            <ArrowDownLeft size={16} /> Despesas
+          </h3>
+          <span className="text-[10px] bg-rose-500/10 text-rose-600 px-2 py-0.5 rounded-full font-bold">
+            {expenses.length} itens
+          </span>
+        </div>
+        <div className="p-2 space-y-1 overflow-y-auto flex-1 max-h-[400px]">
+          {expenses.length === 0 ? (
+            <p className="text-center py-8 text-xs text-dark-muted italic">Nenhuma despesa.</p>
+          ) : (
+            expenses.map(t => <TransactionItem key={t.id} t={t} />)
+          )}
+        </div>
       </div>
     </div>
   );

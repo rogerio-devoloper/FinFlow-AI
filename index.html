@@ -18,7 +18,6 @@
                 600: '#0284c7',
                 900: '#0c4a6e',
               },
-              // Semantic colors mapped to CSS variables
               dark: {
                 bg: 'var(--color-bg)',
                 card: 'var(--color-card)',
@@ -35,25 +34,23 @@
     </script>
     <style>
       :root {
-        /* Light Mode Defaults */
-        --color-bg: #f8fafc;        /* slate-50 */
-        --color-card: #ffffff;      /* white */
-        --color-text: #0f172a;      /* slate-900 */
-        --color-muted: #64748b;     /* slate-500 */
-        --color-border: #e2e8f0;    /* slate-200 */
-        --color-input: #f1f5f9;     /* slate-100 */
-        --color-hover: #f1f5f9;     /* slate-100 */
+        --color-bg: #f8fafc;
+        --color-card: #ffffff;
+        --color-text: #0f172a;
+        --color-muted: #64748b;
+        --color-border: #e2e8f0;
+        --color-input: #f1f5f9;
+        --color-hover: #f1f5f9;
       }
 
       .dark {
-        /* Dark Mode Overrides */
-        --color-bg: #0f172a;        /* slate-900 */
-        --color-card: #1e293b;      /* slate-800 */
-        --color-text: #f8fafc;      /* slate-50 */
-        --color-muted: #94a3b8;     /* slate-400 */
-        --color-border: #334155;    /* slate-700 */
-        --color-input: #0f172a;     /* slate-900 */
-        --color-hover: #334155;     /* slate-700 */
+        --color-bg: #0f172a;
+        --color-card: #1e293b;
+        --color-text: #f8fafc;
+        --color-muted: #94a3b8;
+        --color-border: #334155;
+        --color-input: #0f172a;
+        --color-hover: #334155;
       }
 
       body {
@@ -63,7 +60,6 @@
         transition: background-color 0.3s ease, color 0.3s ease;
       }
       
-      /* Custom Scrollbar */
       ::-webkit-scrollbar {
         width: 8px;
       }
@@ -78,20 +74,34 @@
         background: var(--color-muted); 
       }
 
-      /* Overdue Pulse Animation */
       @keyframes pulse-alert {
         0%, 100% {
-          background-color: rgba(244, 63, 94, 0.05); /* rose-500 very low opacity */
+          background-color: rgba(244, 63, 94, 0.05);
           box-shadow: inset 4px 0 0 0 rgba(244, 63, 94, 0.3);
         }
         50% {
-          background-color: rgba(244, 63, 94, 0.15); /* rose-500 low opacity */
+          background-color: rgba(244, 63, 94, 0.15);
           box-shadow: inset 4px 0 0 0 rgba(244, 63, 94, 1);
+        }
+      }
+
+      @keyframes glow-warning {
+        0%, 100% {
+          box-shadow: 0 0 5px rgba(245, 158, 11, 0.2), inset 0 0 5px rgba(245, 158, 11, 0.1);
+          border-color: rgba(245, 158, 11, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 15px rgba(245, 158, 11, 0.6), inset 0 0 10px rgba(245, 158, 11, 0.3);
+          border-color: rgba(245, 158, 11, 0.8);
         }
       }
 
       .animate-overdue {
         animation: pulse-alert 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+
+      .animate-glow-warning {
+        animation: glow-warning 2s ease-in-out infinite;
       }
     </style>
   <script type="importmap">

@@ -42,7 +42,7 @@ export const AIAdvisor: React.FC<AIAdvisorProps> = ({ transactions }) => {
                     </div>
                     <div>
                         <h3 className="text-xl font-bold text-indigo-950 dark:text-white whitespace-nowrap">Consultor IA</h3>
-                        <p className="text-indigo-600/70 dark:text-indigo-200/70 text-sm whitespace-nowrap">Powered by Gemini 2.5</p>
+                        <p className="text-indigo-600/70 dark:text-indigo-200/70 text-sm whitespace-nowrap">Powered by Gemini 3</p>
                     </div>
                 </div>
                 {!insight && (
